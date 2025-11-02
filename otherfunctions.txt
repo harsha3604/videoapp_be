@@ -1,0 +1,3 @@
+things to do later:
+
+Bulk delete for notes

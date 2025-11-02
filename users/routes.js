@@ -6,7 +6,7 @@ const userAuth = require("../middleware/userAuth");
 const express = require("express");
 const router = express.Router();
 
-const User = db.users;
+const User = db.User;
 
 router.post("/create", userAuth.saveUser, async (req, res) => {
   try {

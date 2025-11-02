@@ -9,6 +9,7 @@ const cors = require("cors");
 //importing routes
 
 const userRoutes = require("./users/routes");
+const noteRoutes = require("./notes/routes");
 
 // port
 const PORT = process.env.PORT || 8000;
@@ -27,10 +28,9 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 //   console.log("db has been re synced");
 // });
 
-db.sequelize.sync();
-
 //routes for the user API
 app.use("/api/users", userRoutes);
+app.use("/api/notes", noteRoutes);
 
 //listening to server connection
 app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));

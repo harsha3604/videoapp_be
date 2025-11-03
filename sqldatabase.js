@@ -2,9 +2,14 @@ const { Sequelize, DataTypes } = require("sequelize");
 
 // Initialize Sequelize
 const sequelize = new Sequelize(
-  `postgres://postgres:postgres@localhost:5432/tutorial`,
+  `postgres://${process.env.SQL_DATABASE_USER}:${process.env.SQL_DATABASE_PASSWORD}@localhost:5432/${process.env.SQL_DATABASE_NAME}`,
   { dialect: "postgres" }
 );
+
+//synchronizing the database and forcing it to false so we dont lose data
+// db.sequelize.sync({ force: true }).then(() => {
+//   console.log("db has been re synced");
+// });
 
 // Check connection
 sequelize

@@ -21,6 +21,11 @@ router.post("/create", async (req, res) => {
 
     const userId = user.dataValues.id;
 
+    if (!title || !content)
+      return res
+        .status(400)
+        .json({ message: "Both fields need to be filled." });
+
     const note = await Note.create({ title, content, userId });
     res.status(201).json({ message: "Success", note: note });
   } catch (err) {

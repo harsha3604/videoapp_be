@@ -63,7 +63,10 @@ router.post("/login", async (req, res) => {
         let token = jwt.sign({ id: user.id }, process.env.secretKey, {
           expiresIn: 1 * 24 * 60 * 60,
         });
-        res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
+        res.cookie("jwt", token, {
+          maxAge: 24 * 60 * 60 * 1000,
+          httpOnly: true,
+        });
 
         return res.status(201).json({ message: "Logged In", user: user });
       } else {

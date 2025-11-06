@@ -22,14 +22,36 @@ const db = {};
 // Import model factory functions
 const userModel = require("./models/userModel");
 const noteModel = require("./models/noteModel");
+const chatRoomModel = require("./models/chatRoomModel");
+const chatParticipantModel = require("./models/chatParticipantModel");
 
 // Initialize models
 db.User = userModel(sequelize, DataTypes);
 db.Note = noteModel(sequelize, DataTypes);
+db.ChatRoom = chatRoomModel(sequelize, DataTypes);
+db.ChatParticipant = chatParticipantModel(sequelize, DataTypes);
 
 // Define associations (after models are initialized)
-db.User.hasMany(db.Note, { foreignKey: "userId", as: "notes" });
-db.Note.belongsTo(db.User, { foreignKey: "userId", as: "user" });
+db.User.hasMany(db.Note, { foreignKey: "userId", as: "usernotes" });
+db.User.hasMany(db.ChatRoom, { foreignKey: "createdBy", as: "userchatroom" });
+db.User.hasMany(db.ChatParticipant, {
+  foreignKey: "userId",
+  as: "userchatparticipant",
+});
+db.Note.belongsTo(db.User, { foreignKey: "userId", as: "noteuser" });
+db.ChatRoom.belongsTo(db.User, { foreignKey: "createdBy", as: "chatroomuser" });
+db.ChatRoom.hasMany(db.ChatParticipant, {
+  foreignKey: "chatRoomId",
+  as: "chatroomchatparticipant",
+});
+db.ChatParticipant.belongsTo(db.User, {
+  foreignKey: "userId",
+  as: "chatroomparticipantuser",
+});
+db.ChatParticipant.belongsTo(db.ChatRoom, {
+  foreignKey: "chatRoomId",
+  as: "chatparticipantchatroom",
+});
 
 // Add Sequelize and sequelize instance to db object
 db.Sequelize = Sequelize;

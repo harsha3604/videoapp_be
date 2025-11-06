@@ -1,3 +1,4 @@
 things to do later:
 
 Bulk delete for notes
+REplicate MS paint lol

@@ -27,10 +27,12 @@ mongoose
 //importing routes
 const userRoutes = require("./users/routes");
 const noteRoutes = require("./notes/routes");
+const chatRoutes = require("./chats/routes");
 
 //routes for the user API
 app.use("/api/users", userRoutes);
 app.use("/api/notes", noteRoutes);
+app.use("/api/chats", chatRoutes);
 
 //listening to server connection
 app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));

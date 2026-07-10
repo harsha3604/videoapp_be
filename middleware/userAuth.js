@@ -1,6 +1,6 @@
 //importing modules
-const express = require("express");
-const db = require("../sqldatabase");
+import db from "../sqldatabase.js";
+
 //Assigning db.users to User variable
 const User = db.User;
 
@@ -37,5 +37,4 @@ const saveUser = async (req, res, next) => {
   }
 };
 
-//exporting module
-module.exports = { saveUser };
+export default { saveUser };

@@ -1,10 +1,13 @@
 // importing modules
-
-const express = require("express");
-const dotenv = require("dotenv").config();
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
-const mongoose = require("mongoose");
+import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import mongoose from "mongoose";
+import userRoutes from "./routes/userRoutes.js";
+import noteRoutes from "./routes/noteRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
 // port
 const PORT = process.env.BACKEND_PORT || 8000;
@@ -23,11 +26,6 @@ mongoose
   .connect(process.env.NO_SQL_URL)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
-
-//importing routes
-const userRoutes = require("./users/routes");
-const noteRoutes = require("./notes/routes");
-const chatRoutes = require("./chats/routes");
 
 //routes for the user API
 app.use("/api/users", userRoutes);

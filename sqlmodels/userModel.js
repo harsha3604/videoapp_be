@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const User = sequelize.define(
     "user",
     {
@@ -9,15 +9,20 @@ module.exports = (sequelize, DataTypes) => {
       email: {
         type: DataTypes.STRING,
         unique: true,
-        isEmail: true, //checks for email format
+        validate: { isEmail: true },
         allowNull: false,
       },
       password: {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      role: {
+        type: DataTypes.ENUM("founder", "member"),
+        allowNull: false,
+        defaultValue: "member",
+      },
     },
-    { timestamps: true }
+    { timestamps: true },
   );
 
   return User;

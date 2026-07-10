@@ -1,25 +1,17 @@
 // routes/noteRoutes.js
-const express = require("express");
-const router = express.Router();
-const db = require("../sqldatabase");
-const jwt = require("jsonwebtoken");
+import express from "express";
+import db from "../sqldatabase.js";
+import verifyLogin from "../middleware/verifyLogin.js";
 
-const User = db.User;
+const router = express.Router();
 const Note = db.Note;
 
 // CREATE
-router.post("/create", async (req, res) => {
+router.post("/create", verifyLogin.verifyLogin, async (req, res) => {
   try {
     const { title, content } = req.body;
-    const token = req.cookies.jwt;
-    if (!token) return res.status(401).json({ message: "No token found" });
 
-    const decoded = jwt.verify(token, process.env.secretKey);
-    const user = await User.findByPk(decoded.id);
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const userId = user.dataValues.id;
+    const userId = req.loginData.userId;
 
     if (!title || !content)
       return res
@@ -34,18 +26,11 @@ router.post("/create", async (req, res) => {
 });
 
 // GET
-router.get("/:note_id", async (req, res) => {
+router.get("/:note_id", verifyLogin.verifyLogin, async (req, res) => {
   try {
     const { note_id } = req.params;
-    const token = req.cookies.jwt;
-    if (!token) return res.status(401).json({ message: "No token found" });
 
-    const decoded = jwt.verify(token, process.env.secretKey);
-    const user = await User.findByPk(decoded.id);
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const userId = user.dataValues.id;
+    const userId = req.loginData.userId;
 
     const note = await Note.findOne({
       where: {
@@ -65,13 +50,9 @@ router.get("/:note_id", async (req, res) => {
 });
 
 // GET WITH PAGINATION
-router.get("/", async (req, res) => {
+router.get("/", verifyLogin.verifyLogin, async (req, res) => {
   try {
-    const token = req.cookies.jwt;
-    if (!token) return res.status(401).json({ message: "No token found" });
-
-    const decoded = jwt.verify(token, process.env.secretKey);
-    const userId = decoded.id;
+    const userId = req.loginData.userId;
 
     // Pagination parameters
     const page = parseInt(req.query.page) || 1;
@@ -103,19 +84,12 @@ router.get("/", async (req, res) => {
 });
 
 // UPDATE
-router.put("/:note_id", async (req, res) => {
+router.put("/:note_id", verifyLogin.verifyLogin, async (req, res) => {
   try {
     const { note_id } = req.params;
     const { title, content } = req.body;
-    const token = req.cookies.jwt;
-    if (!token) return res.status(401).json({ message: "No token found" });
 
-    const decoded = jwt.verify(token, process.env.secretKey);
-    const user = await User.findByPk(decoded.id);
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const userId = user.dataValues.id;
+    const userId = req.loginData.userId;
 
     const note = await Note.findOne({
       where: {
@@ -139,18 +113,11 @@ router.put("/:note_id", async (req, res) => {
 });
 
 //DELETE
-router.delete("/:note_id", async (req, res) => {
+router.delete("/:note_id", verifyLogin.verifyLogin, async (req, res) => {
   try {
     const { note_id } = req.params;
-    const token = req.cookies.jwt;
-    if (!token) return res.status(401).json({ message: "No token found" });
 
-    const decoded = jwt.verify(token, process.env.secretKey);
-    const user = await User.findByPk(decoded.id);
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const userId = user.dataValues.id;
+    const userId = req.loginData.userId;
 
     const note = await Note.findOne({
       where: {
@@ -169,4 +136,4 @@ router.delete("/:note_id", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

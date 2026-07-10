@@ -1,11 +1,11 @@
 //importing modules
-const bcrypt = require("bcrypt");
-const db = require("../sqldatabase");
-const jwt = require("jsonwebtoken");
-const userAuth = require("../middleware/userAuth");
-const express = require("express");
-const router = express.Router();
+import bcrypt from "bcrypt";
+import db from "../sqldatabase.js";
+import jwt from "jsonwebtoken";
+import userAuth from "../middleware/userAuth.js";
+import express from "express";
 
+const router = express.Router();
 const User = db.User;
 
 router.post("/create", userAuth.saveUser, async (req, res) => {
@@ -107,4 +107,4 @@ router.get("/verify", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

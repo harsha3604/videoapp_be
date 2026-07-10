@@ -1,7 +1,4 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../sqldatabase");
-
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Note = sequelize.define(
     "note",
     {
@@ -22,5 +19,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     { timestamps: true }
   );
+
   return Note;
 };

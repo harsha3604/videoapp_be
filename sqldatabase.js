@@ -1,4 +1,14 @@
-const { Sequelize, DataTypes } = require("sequelize");
+import dotenv from "dotenv";
+import { Sequelize, DataTypes } from "sequelize";
+
+// Load environment variables
+dotenv.config();
+
+// Import sqlmodels
+import UserModel from "./sqlmodels/userModel.js";
+import NoteModel from "./sqlmodels/noteModel.js";
+import ChatRoomModel from "./sqlmodels/chatRoomModel.js";
+import ChatParticipantModel from "./sqlmodels/chatParticipantModel.js";
 
 // Initialize Sequelize
 const sequelize = new Sequelize(
@@ -6,61 +16,65 @@ const sequelize = new Sequelize(
   { dialect: "postgres" }
 );
 
-//synchronizing the database and forcing it to false so we dont lose data
-// db.sequelize.sync({ force: true }).then(() => {
-//   console.log("db has been re synced");
-// });
+// Test connection
+try {
+  await sequelize.authenticate();
+  console.log("POSTGRES server connected to the app");
+} catch (err) {
+  console.error("Database not connected", err);
+}
 
-// Check connection
-sequelize
-  .authenticate()
-  .then(() => console.log("POSTGRES server connected to the app"))
-  .catch((err) => console.error("Database not connected", err));
-
+// Initialize db object
 const db = {};
 
-// Import model factory functions
-const userModel = require("./models/userModel");
-const noteModel = require("./models/noteModel");
-const chatRoomModel = require("./models/chatRoomModel");
-const chatParticipantModel = require("./models/chatParticipantModel");
+// Initialize sqlmodels
+db.User = UserModel(sequelize, DataTypes);
+db.Note = NoteModel(sequelize, DataTypes);
+db.ChatRoom = ChatRoomModel(sequelize, DataTypes);
+db.ChatParticipant = ChatParticipantModel(sequelize, DataTypes);
 
-// Initialize models
-db.User = userModel(sequelize, DataTypes);
-db.Note = noteModel(sequelize, DataTypes);
-db.ChatRoom = chatRoomModel(sequelize, DataTypes);
-db.ChatParticipant = chatParticipantModel(sequelize, DataTypes);
-
-// Define associations (after models are initialized)
+// Define associations (AFTER sqlmodels are initialized)
 db.User.hasMany(db.Note, { foreignKey: "userId", as: "usernotes" });
+
 db.User.hasMany(db.ChatRoom, { foreignKey: "createdBy", as: "userchatroom" });
+
 db.User.hasMany(db.ChatParticipant, {
   foreignKey: "userId",
   as: "userchatparticipant",
 });
+
 db.Note.belongsTo(db.User, { foreignKey: "userId", as: "noteuser" });
-db.ChatRoom.belongsTo(db.User, { foreignKey: "createdBy", as: "chatroomuser" });
+
+db.ChatRoom.belongsTo(db.User, {
+  foreignKey: "createdBy",
+  as: "chatroomuser",
+});
+
 db.ChatRoom.hasMany(db.ChatParticipant, {
   foreignKey: "chatRoomId",
   as: "chatroomchatparticipant",
 });
+
 db.ChatParticipant.belongsTo(db.User, {
   foreignKey: "userId",
   as: "chatroomparticipantuser",
 });
+
 db.ChatParticipant.belongsTo(db.ChatRoom, {
   foreignKey: "chatRoomId",
   as: "chatparticipantchatroom",
 });
 
-// Add Sequelize and sequelize instance to db object
+// Add Sequelize constructor & instance
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// Sync database
-db.sequelize
-  .sync({ alter: true })
-  .then(() => console.log("Database synced successfully"))
-  .catch((err) => console.error("Error syncing DB:", err));
+// Sync sqlmodels with DB
+try {
+  await sequelize.sync({ alter: true });
+  console.log("Database synced successfully");
+} catch (err) {
+  console.error("Error syncing DB:", err);
+}
 
-module.exports = db;
+export default db;

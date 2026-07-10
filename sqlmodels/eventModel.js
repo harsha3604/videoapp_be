@@ -16,6 +16,16 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      location: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "Location not specified",
+      },
+      locationLink: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: "Location link not specified",
+      },
       date: {
         type: DataTypes.DATE,
         allowNull: false,

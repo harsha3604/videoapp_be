@@ -2,9 +2,12 @@ import express from "express";
 import db from "../sqldatabase.js";
 import verifyLogin from "../middleware/verifyLogin.js";
 import roleOnly from "../middleware/roleOnly.js";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 const Event = db.Event;
+const Registration = db.Registration;
+const User = db.User;
 
 //CREATE
 
@@ -102,30 +105,57 @@ router.put(
 //GET WITH PAGINATION
 router.get("/", async (req, res) => {
   try {
-    // Pagination parameters
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const offset = (page - 1) * limit;
+    const token = req.cookies.jwt;
+    if (!token) return res.status(401).json({ message: "No token found" });
+    const decoded = jwt.verify(token, process.env.secretKey);
+    const user = await User.findByPk(decoded.id);
+    const userId = user.dataValues.id;
 
-    // Fetch events
     const { rows: events, count: totalEvents } = await Event.findAndCountAll({
       limit,
       offset,
-      order: [["createdAt", "DESC"]], // optional: sort newest first
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: Registration,
+          as: "eventregistration",
+          attributes: ["userId", "attendanceStatus"],
+          where: {
+            attendanceStatus: "registered",
+          },
+          required: false,
+        },
+      ],
     });
 
-    // Pagination metadata
-    const totalPages = Math.ceil(totalEvents / limit);
+    const eventsWithRegistrationInfo = events.map((event) => {
+      const eventJson = event.toJSON();
+      const registrations = eventJson.eventregistration;
+
+      return {
+        ...eventJson,
+        registeredCount: registrations.length,
+        seatsLeft: eventJson.capacity - registrations.length,
+        isRegistered: userId
+          ? registrations.some((r) => r.userId === userId)
+          : false,
+      };
+    });
 
     res.status(200).json({
       currentPage: page,
-      totalPages,
+      totalPages: Math.ceil(totalEvents / limit),
       totalEvents,
-      events,
+      events: eventsWithRegistrationInfo,
       message: "Events sent successfully.",
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      message: err.message,
+    });
   }
 });
 

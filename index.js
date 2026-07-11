@@ -9,6 +9,7 @@ import userRoutes from "./routes/userRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import eventRoutes from "./routes/eventsRoutes.js";
+import registerRoutes from "./routes/registerRoutes.js";
 
 // port
 const PORT = process.env.BACKEND_PORT || 8000;
@@ -33,6 +34,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/events", registerRoutes);
 
 //listening to server connection
 app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));

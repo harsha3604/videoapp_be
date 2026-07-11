@@ -57,6 +57,7 @@ db.Registration.belongsTo(db.User, {
 });
 
 db.Note.belongsTo(db.User, { foreignKey: "userId", as: "noteuser" });
+
 db.Event.hasMany(db.Registration, {
   foreignKey: "eventId",
   as: "eventregistration",

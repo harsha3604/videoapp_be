@@ -15,15 +15,22 @@ router.post(
   async (req, res) => {
     try {
       console.log("started");
-      const { title, description, date, capacity } = req.body;
+      console.log(req.cookies);
+      const { title, description, date, capacity, location, locationLink } =
+        req.body;
 
-      if (!title || !date || !capacity) {
-        return res
-          .status(400)
-          .json({ message: "Title, date, and capacity are required." });
+      if (!title || !date || !capacity || !location || !locationLink) {
+        return res.status(400).json({ message: "All fields are required." });
       }
 
-      const event = await Event.create({ title, description, date, capacity });
+      const event = await Event.create({
+        title,
+        description,
+        date,
+        capacity,
+        location,
+        locationLink,
+      });
       res
         .status(201)
         .json({ message: "Event created successfully", event: event });
@@ -34,7 +41,7 @@ router.post(
 );
 
 //GET
-router.get("/:event_id", verifyLogin.verifyLogin, async (req, res) => {
+router.get("/:event_id", async (req, res) => {
   try {
     const { event_id } = req.params;
 
@@ -62,7 +69,8 @@ router.put(
   async (req, res) => {
     try {
       const { event_id } = req.params;
-      const { title, description, date, capacity } = req.body;
+      const { title, description, date, capacity, location, locationLink } =
+        req.body;
 
       const event = await Event.findOne({
         where: {
@@ -77,6 +85,8 @@ router.put(
       if (description) event.description = description;
       if (date) event.date = date;
       if (capacity) event.capacity = capacity;
+      if (location) event.location = location;
+      if (locationLink) event.locationLink = locationLink;
 
       await event.save();
 
@@ -90,7 +100,7 @@ router.put(
 );
 
 //GET WITH PAGINATION
-router.get("/", verifyLogin.verifyLogin, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     // Pagination parameters
     const page = parseInt(req.query.page) || 1;

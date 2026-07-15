@@ -10,6 +10,7 @@ import noteRoutes from "./routes/noteRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import eventRoutes from "./routes/eventsRoutes.js";
 import registerRoutes from "./routes/registerRoutes.js";
+import path from "path";
 
 // port
 const PORT = process.env.BACKEND_PORT || 8000;
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CORS_URL, credentials: true }));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // Connect to MongoDB
 mongoose

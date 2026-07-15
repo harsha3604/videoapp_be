@@ -21,6 +21,24 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: "member",
       },
+      phoneNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 1234567890,
+      },
+      age: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 10,
+      },
+      image: {
+        type: DataTypes.STRING, // URL to the profile image
+        allowNull: false,
+      },
+      gender: {
+        type: DataTypes.ENUM("male", "female", "other"),
+        allowNull: false,
+      },
     },
     { timestamps: true },
   );

@@ -17,8 +17,8 @@ router.post(
   roleOnly("founder"),
   async (req, res) => {
     try {
-      console.log("started");
-      console.log(req.cookies);
+      // console.log("started");
+      // console.log(req.cookies);
       const { title, description, date, capacity, location, locationLink } =
         req.body;
 
